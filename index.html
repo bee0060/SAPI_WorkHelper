@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+    <title>工作辅助</title>
+    <style type="text/css">
+        span
+        {
+            vertical-align: top;
+        }
+        textarea
+        {
+            height: 300px;
+            width: 800px;
+        }
+		input[type=text]
+		{
+			width:300px;
+		}
+    </style>
+</head>
+<body>
+    <span>输入：</span><div>
+        <textarea id="txaIn" rows="20" cols="50"></textarea></div>
+    <br />
+
+   <span>按</span><input id='txtReg' type="text" /><span>正则匹配(用{0}、{1}等作为后续参数)</span><br />    
+    <span>按</span><input id='txtOutFormat' type="text" /><span>格式输出(用{0}、{1}等作为后续参数)</span><br />
+    <span>按</span><input id='txtReversionStr' type="text" /><span>字符调换内容</span><br />
+
+
+    <input id='btnReversion' type="button" value="调换" />
+	<input id='btnSetReversionDefault' type="button" value="使用调换方法默认设置" />
+    <br />
+    <input id='btnGetAllControls' type="button" value="获取全部控件" />
+	<input id='btnSetGetAllControlsDefault' type="button" value="使用获取控件方法默认设置" />
+    <br />
+	
+	<input id='btnCheckRegValid' type='button' value="验证正则是否能匹配所有传入值">
+	<br/ >
+    <span>输出：</span><div>
+        <textarea id="txaOut" rows="20" cols="50"></textarea></div>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript">
+        function GetContentArr(splitStr)
+        {
+            var splitStr = typeof splitStr == 'undefined' ? "??,??" : splitStr,
+                reg = new RegExp("'" + splitStr + "$'"),
+                strIn = $("#txaIn").val().replace(/[\n\t\r]/gm, splitStr).replace(reg, "");
+            return inArr = strIn.split(splitStr);
+        }
+
+        function reversion(inArr, rStr)
+        {
+            //调换方法用的正则为：   ^ *([^ =].*) *{0} *(.*) *;$
+            //调用方法输出格式：      $2{0}$1;
+            var inEleCount = inArr.length,                
+                txaOut = $("#txaOut"),
+                strOut = "",
+                regStr = $('#txtReg').val().replace(new RegExp('\\{0\\}', 'g'), rStr),
+                reg = new RegExp(regStr, "gm"),
+                outFormat = $('#txtOutFormat').val().replace('{0}',rStr),
+                tempStr;
+           
+            for (var i = 0; i < inEleCount; i++)
+            {
+                tempStr = inArr[i].replace(reg, outFormat);               
+                strOut += (tempStr + "\n");
+            }
+            txaOut.val(strOut);
+        }
+        function getAllControls(inArr)
+        {
+            var inEleCount = inArr.length,
+                txaOut = $("#txaOut"),
+                outFormat = $('#txtOutFormat').val(),
+                strOut = "",
+                reg = /((txt|txa|hid|ddl|rdl|cbk)[a-zA-Z]+)/gm,
+                tempArr = [];
+
+            for (var i = 0; i < inEleCount; i++)
+            {
+                inArr[i].replace(reg, function ()
+                {
+                    for (var j = 0; j < arguments.length; j++)
+                    {
+                        if (!reg.test(arguments[j])) break;
+                        if (("," + tempArr.join(",") + ",").indexOf("," + arguments[j] + ",") == -1)
+                        {
+                            tempArr.push(outFormat.replace(new RegExp('\\{0\\}', 'g'), arguments[j]));
+                        }
+                    }
+                });
+            }
+            txaOut.val(tempArr.join(""));
+        }
+
+		function getNotMatchIndexInArrayValueByReg(inArr,reg)
+		{
+			var notMatchArr = [],
+				reg = typeof reg =='string' ? eval(reg):reg;
+
+			for(var i =0;i<inArr.length;i++)
+			{
+				if(!reg.test(inArr[i])){ notMatchArr.push(+i+1); }
+			}
+			return notMatchArr;
+		}
+		function checkRegValid(inArr,reg)
+		{
+			var notMatchArr = getNotMatchIndexInArrayValueByReg(inArr,reg),				
+				txaOut = $('#txaOut');
+
+			txaOut.val(!notMatchArr || !notMatchArr.length ? "匹配成功" : "匹配失败,失败值的索引为："+ notMatchArr.join());
+		}
+
+        $(document).ready(function ()
+        {
+            var txtReg = $('#txtReg'),
+                txtOutFormat = $('#txtOutFormat'),
+                txtReversionStr = $('#txtReversionStr'),
+				txaOut = $('#txaOut');
+
+            $('#btnReversion').bind('click', function ()
+            {
+                var inArr = GetContentArr(),
+                    rStr = $('#txtReversionStr').val();
+                reversion(inArr, rStr);
+            });
+            $('#btnSetReversionDefault').bind('click', function ()
+            {
+                txtReg.val('^ *([^ =].*) *{0} *(.*) *;$');
+                txtOutFormat.val('$2{0}$1;');
+                txtReversionStr.val('=');
+            });
+
+            $('#btnGetAllControls').bind('click', function ()
+            {
+                var inArr = GetContentArr();
+                getAllControls(inArr);
+            });
+            $('#btnSetGetAllControlsDefault').bind('click', function ()
+            {
+                txtOutFormat.val('{0},');
+            });
+			$('#btnCheckRegValid').bind('click', function ()
+            {
+				var inArr = GetContentArr();
+                checkRegValid(inArr,txtReg.val());
+				alert('No bug');
+            });
+        });
+             
+    </script>
+</body>
+</html>
