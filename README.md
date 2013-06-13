@@ -19,7 +19,7 @@ The help work tool
  
  2. 获取控件ID功能。 可输入一大堆字符串，如前端aspx代码，使用该功能后可获
     取字符串中所有ID以txt、txa、hid、ddl、rdl、cbk开头控件的ID。
-
+	
 	操作步骤：
 	a. 在上面的textarea内输入你要查找的内容，如一个aspx文件的全部代码。
 	b. 点击“使用获取控件方法默认设置”。
