@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+    <title>工作辅助</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <style type="text/css">
+    .required { color:red; font-weight: bold;}
+
+    table,tr,td,input,p,button { margin: 0px; padding: 0px; }
+
+    table{
+        
+    }
+    table td { border: solid 1px #000; vertical-align: top; }
+        textarea
+        {
+            height: 300px;
+            width: 800px;
+        }
+
+    #tbFormSetting input[type=text]{ width:70px; }
+    #tbFormSetting td table td { width:70px; }
+
+    </style>
+</head>
+<body>
+    列数：<input type='radio' name='colCount' value='1'/>1 列
+    <input type='radio' name='colCount' value='2' checked='checked' />2 列
+    &nbsp;&nbsp;&nbsp;
+    <input id='btnGenerate' type='button' value='生成Html' />
+
+    <table id='tbFormSetting'>
+    <tbody>
+            <tr>
+                <td>
+                  <table>
+                     <thead>
+                        <tr>
+                            <td>
+                                Label ID
+                            </td>
+                            <td>
+                                Label Text
+                            </td>
+                            <td>
+                                <span class='required'>*</span>Ctrl Type
+                            </td>
+                            <td>
+                                Ctrl ID
+                            </td>
+                            <td>
+                                Options
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                </td>
+                <td>--blank--</td>
+                 <td>
+                   <table>
+                         <thead>
+                            <tr>
+                                <td>
+                                    Label ID
+                                </td>
+                                <td>
+                                    Label Text
+                                </td>
+                                <td>
+                                    <span class='required'>*</span>Ctrl Type
+                                </td>
+                                <td>
+                                    Ctrl ID
+                                </td>
+                                <td>
+                                    Options
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </td>
+                <td><input name='addRow' type='button' value='Add Row'></td>
+            </tr>
+    </tbody>
+    </table>
+
+
+	<br/ >
+    <span>输出：</span><div>
+        <textarea id="txaOut" rows="20" cols="50"></textarea></div>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript">    
+        var tbFormSetting = null,
+            rblColCount = null,
+            btnAddRow = null,
+            btnGenerate = null;
+
+        function $c(createElementStr)
+        {
+            return document.createElement(createElementStr);
+        }
+
+       function setColsCount(colsCount)
+       { 
+            var secondColsTD =  tbFormSetting.find('>tbody >tr').find('>td:eq(1),>td:eq(2)');
+
+            if(colsCount==1)
+            {
+                secondColsTD.hide();
+            }
+            else{
+                secondColsTD.show();
+            }
+       }
+
+       function addRow(btnObj)
+       {
+            btnObj = $(btnObj);
+            var parentRow = btnObj.closest('tr'),
+                colTableBodies = parentRow.find('table tbody');
+
+            colTableBodies.each(function(i, tbody){
+                var tr = $c('tr'),
+                    td,
+                    ctrl;
+
+                for(var colIndex = 0; colIndex<5;colIndex++)
+                {
+                    td = $c('td'),
+                    ctrl = $c('input');
+
+                    ctrl.type='text';
+
+                    td.appendChild(ctrl);
+                    tr.appendChild(td);
+                }
+
+                $(tbody).append(tr);
+            });
+       }
+
+
+       function generateOutput()
+       {
+        alert("!");
+            var colCount = rblColCount.filter('[checked]').val(),
+                colTableBodies = tbFormSetting.find('table tbody'),
+                rowCount = colTableBodies.eq(0).find('tr').length;
+
+            alert(colCount);
+            alert(rowCount);
+
+
+
+
+       }
+
+       $(document).ready(function(){
+            tbFormSetting = $('#tbFormSetting');
+            rblColCount = $('[name=colCount]');
+            btnAddRow = $('[name=addRow]');
+            btnGenerate = $('#btnGenerate');
+
+            rblColCount.on('change',function(){
+                setColsCount(this.value)
+            });
+
+            btnAddRow.on('click',function(){
+                addRow(this);
+            });
+
+            btnGenerate.on('click',function(){
+                generateOutput();
+            });
+       });
+
+
+             
+    </script>
+</body>
+</html>
