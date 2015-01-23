@@ -101,6 +101,27 @@
         function $c(createElementStr)
         {
             return document.createElement(createElementStr);
+        } 
+
+        function createTxt(attrs)
+        {
+            var txt = $c('input');
+            txt.type='text';
+            addAttrs(txt,attrs);
+            return txt;
+        }
+
+        function addAttrs(obj, attrs)
+        {
+            if(!obj || !attrs)
+            {
+                return;
+            }
+
+            for( var attr in attrs)
+            {
+                obj[attr] = attrs[attr];
+            }
         }
 
        function setColsCount(colsCount)
@@ -124,28 +145,81 @@
 
             colTableBodies.each(function(i, tbody){
                 var tr = $c('tr'),
-                    td,
-                    ctrl;
+                    content = createModuleCell();
 
-                for(var colIndex = 0; colIndex<5;colIndex++)
-                {
-                    td = $c('td'),
-                    ctrl = $c('input');
-
-                    ctrl.type='text';
-
-                    td.appendChild(ctrl);
-                    tr.appendChild(td);
-                }
+                tr.appendChild(content);
 
                 $(tbody).append(tr);
             });
        }
 
+       function createModuleCell()
+       {
+            var frag = document.createDocumentFragment(),
+                td ,
+                txt,
+                ctrl;
+
+            td = $c('td');
+            txt = createTxt({ name : "labelID"});
+            td.appendChild(txt);
+            frag.appendChild(td);
+
+            td = $c('td');
+            txt = createTxt({ name : "labelText"});
+            td.appendChild(txt);
+            frag.appendChild(td);
+
+            td = $c('td');
+            ctrl = createCtrlTypeDDL();
+            td.appendChild(ctrl);
+            frag.appendChild(td);
+
+            td = $c('td');
+            txt = createTxt({ name : "ctrlID"});
+            td.appendChild(txt);
+            frag.appendChild(td);
+
+            td = $c('td');
+            txt = createTxt({ name : "options"});
+            td.appendChild(txt);
+            frag.appendChild(td);
+
+            td=null;
+            txt= null;
+            ctrl = null;
+            return frag;
+       }
+
+
+        var ctrlTypes = [
+            { name: "textbox", value: "1"},
+            { name: "ddl", value: "2"},
+            { name: "checkbox", value: "3"},
+            { name: "radio", value: "4"},
+            { name: "hidden", value: "5"},
+            { name: "date", value: "6"}
+        ];
+       function createCtrlTypeDDL()
+       {
+            var ddl = $c('select'),
+                option = null;
+            ddl.name='ctrlType';
+
+            if(!!ctrlTypes && ctrlTypes.length)
+            {
+                for( var i in ctrlTypes){
+                    option =$c('option');
+                    option.value = ctrlTypes[i].value;
+                    option.innerHTML = ctrlTypes[i].name;
+                    ddl.appendChild(option);
+                }
+            }
+            return ddl;
+       }
 
        function generateOutput()
        {
-        alert("!");
             var colCount = rblColCount.filter('[checked]').val(),
                 colTableBodies = tbFormSetting.find('table tbody'),
                 rowCount = colTableBodies.eq(0).find('tr').length;
