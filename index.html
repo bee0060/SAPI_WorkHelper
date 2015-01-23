@@ -36,7 +36,12 @@
     <br />
 	
 	<input id='btnCheckRegValid' type='button' value="验证正则是否能匹配所有传入值">
-	<br/ >
+	<br>
+
+    <!-- 去除重复  Start-->
+    <input id='btnFilterDuplicate' type='button' value='去除重复'>
+    <br>
+    <!-- 去除重复 End-->
     <span>输出：</span><div>
         <textarea id="txaOut" rows="20" cols="50"></textarea></div>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
@@ -113,6 +118,18 @@
 			txaOut.val(!notMatchArr || !notMatchArr.length ? "匹配成功" : "匹配失败,失败值的索引为："+ notMatchArr.join());
 		}
 
+        function filterDulplicate(inArr)
+        {
+            var outputArr = [""],
+                txaOut = $("#txaOut");
+            for(var i =0,length=inArr.length;i<length;i++){
+                if(outputArr.join().indexOf(inArr[i])<0){
+                    outputArr.push(inArr[i]);
+                }
+            }
+            txaOut.val(outputArr.join('\n'));
+        }
+
         $(document).ready(function ()
         {
             var txtReg = $('#txtReg'),
@@ -147,6 +164,12 @@
 				var inArr = GetContentArr();
                 checkRegValid(inArr,txtReg.val());
 				//alert('No bug');
+            });
+
+            $('#btnFilterDuplicate').on('click',function(){
+                var inArr = GetContentArr();
+                filterDulplicate(inArr);
+
             });
         });
              
