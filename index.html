@@ -123,10 +123,12 @@
             var outputArr = [""],
                 txaOut = $("#txaOut");
             for(var i =0,length=inArr.length;i<length;i++){
-                if(outputArr.join().indexOf(inArr[i])<0){
-                    outputArr.push(inArr[i]);
+                if(outputArr.join().indexOf($.trim(inArr[i]))<0){                   
+                    outputArr.push($.trim(inArr[i]));
                 }
             }
+            outputArr.shift();
+            outputArr.sort();
             txaOut.val(outputArr.join('\n'));
         }
 
